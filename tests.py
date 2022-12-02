@@ -14,11 +14,15 @@ class PartyTests(unittest.TestCase):
     def test_homepage(self):
         result = self.client.get("/")
         self.assertIn(b"board games, rainbows, and ice cream sundaes", result.data)
+        print("Test 1 passed")
 
     def test_no_rsvp_yet(self):
         # FIXME: Add a test to show we see the RSVP form, but NOT the
         # party details
-        print("FIXME")
+        result = self.client.get("/")
+        self.assertIn(b"<h2>Please RSVP</h2>", result.data)
+        self.assertNotIn(b"<h2>Party Details</h2>", result.data)
+        print("Test 2 passed")
 
     def test_rsvp(self):
         result = self.client.post("/rsvp",
@@ -27,7 +31,10 @@ class PartyTests(unittest.TestCase):
                                   follow_redirects=True)
         # FIXME: Once we RSVP, we should see the party details, but
         # not the RSVP form
-        print("FIXME")
+        result = self.client.get("/")
+        self.assertIn(b"<h2>Party Details</h2>", result.data)
+        self.assertNotIn(b"<h2>Please RSVP</h2>", result.data)
+        print("Test 3 passed")
 
 
 class PartyTestsDatabase(unittest.TestCase):
@@ -40,22 +47,24 @@ class PartyTestsDatabase(unittest.TestCase):
         app.config['TESTING'] = True
 
         # Connect to test database (uncomment when testing database)
-        # connect_to_db(app, "postgresql:///testdb")
+        connect_to_db(app, "postgresql:///games_test")
 
         # Create tables and add sample data (uncomment when testing database)
-        # db.create_all()
-        # example_data()
+        db.create_all()
+        example_data()
 
     def tearDown(self):
         """Do at end of every test."""
 
         # (uncomment when testing database)
-        # db.session.close()
-        # db.drop_all()
+        db.session.close()
+        db.drop_all()
 
     def test_games(self):
         # FIXME: test that the games page displays the game from example_data()
-        print("FIXME")
+        result = self.client.get('/games')
+        self.assertIn(b"<td>Unicorn Tail</td>", result.data)
+        print("Test 4 passed")
 
 
 if __name__ == "__main__":
