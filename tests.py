@@ -62,6 +62,9 @@ class PartyTestsDatabase(unittest.TestCase):
 
     def test_games(self):
         # FIXME: test that the games page displays the game from example_data()
+        with self.client.session_transaction() as session:
+            session['RSVP'] = True
+
         result = self.client.get('/games')
         self.assertIn(b"<td>Unicorn Tail</td>", result.data)
         print("Test 4 passed")
